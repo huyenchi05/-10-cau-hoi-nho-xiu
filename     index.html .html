@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10 câu hỏi nhỏ xíu nhỏ xiu 😇</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:#f7fbff; color:#40566b; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  .card{
+    width:min(92%,520px); background:white; border:1px solid #dbeeff; border-radius:28px;
+    padding:30px 24px; box-shadow:0 12px 35px rgba(91,160,210,.12);
+  }
+  h1{font-size:25px; color:#78acd1; margin:4px 0 12px; text-align:center}
+  .intro{text-align:center; line-height:1.6; margin-bottom:26px}
+  .q{font-size:20px; line-height:1.5; font-weight:650; margin-bottom:20px}
+  .options{display:grid; gap:12px}
+  button.option{
+    width:100%; padding:15px 16px; border:1.5px solid #cfe8f8; border-radius:17px;
+    background:#fbfdff; color:#40566b; text-align:left; font-size:16px; cursor:pointer;
+  }
+  button.option:hover, button.option.selected{background:#eaf6ff; border-color:#91c8ea}
+  .next,.start{
+    width:100%; margin-top:22px; border:0; border-radius:17px; padding:15px;
+    background:#9bcbea; color:white; font-size:16px; font-weight:700; cursor:pointer;
+  }
+  .next:disabled{opacity:.45; cursor:not-allowed}
+  .progress{text-align:center; color:#8bb5d3; font-size:13px; margin-bottom:14px}
+  .hidden{display:none}
+  .end{text-align:center; font-size:19px; line-height:1.7}
+  .tiny{font-size:13px;color:#94aabd;text-align:center;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="card">
+  <section id="intro">
+    <h1>10 câu hỏi nhỏ xíu nhỏ xiu 😇</h1>
+    <div class="intro">Một bài test nho nhỏ thôi, trả lời theo suy nghĩ đầu tiên của anh nha.</div>
+    <button class="start" onclick="start()">Bắt đầu</button>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <div class="progress" id="progress"></div>
+    <div class="q" id="question"></div>
+    <div class="options" id="options"></div>
+    <button class="next" id="next" disabled onclick="nextQuestion()">Câu tiếp theo</button>
+  </section>
+
+  <section id="end" class="hidden end">
+    <div>cảm ơn vì đã dành thời gian để test</div>
+  </section>
+</div>
+
+<script>
+const questions = [
+["Khi rảnh, anh sẽ thường thích làm gì nhất? 🌷",["Chơi game / xem phim","Đi chơi với bạn bè","Nghe nhạc / chill một mình","Làm điều gì đó mình thật sự thích"]],
+["Khi ở trong một nhóm bạn, anh thường là người: 🫧",["Chủ động nói chuyện, tạo không khí","Chỉ quậy khi ở với người thân","Ngồi nghe và quan sát là chính","Tùy nhóm, tùy mood"]],
+["Khi mới gặp một người, điều gì khiến anh chú ý trước? 👀",["Ngoại hình","Cách nói chuyện","Tính cách / năng lượng","Một điều gì đó khó giải thích"]],
+["Anh thường bị thu hút bởi kiểu người nào hơn? 💘",["Dịu dàng, nhẹ nhàng","Hài hước, nói chuyện vui","Cá tính, có chính kiến","Trầm trầm, hơi khó đoán"]],
+["Khi hai người xảy ra mâu thuẫn, anh sẽ: 🫠",["Im lặng một chút cho bình tĩnh rồi nói chuyện","Nói thẳng để giải quyết luôn","Chờ đối phương chủ động trước","Không thích căng thẳng, thường cho qua"]],
+["Khi buồn, anh sẽ thường làm gì? 🌧️",["Ở một mình cho hết buồn","Tìm người nói chuyện","Nghe nhạc / xem phim / chơi game để quên","Vẫn tỏ ra bình thường như chưa có chuyện gì"]],
+["Anh thích cuộc sống như thế nào hơn? 🌿",["Bình yên, ổn định và có nguyên tắc","Tự do, thích gì làm nấy","Có nguyên tắc nhưng vẫn phải có tự do","Tùy từng giai đoạn của cuộc sống"]],
+["Nếu được chọn một nơi để sống trong tương lai, anh sẽ chọn: 🏡",["Thành phố nhộn nhịp, nhiều thứ để khám phá","Một nơi yên bình, ít người","Gần gia đình và những người mình yêu quý","Ở đâu cũng được, miễn là cuộc sống mình thích"]],
+["Điều gì khiến anh muốn tiếp tục nói chuyện với một người sau lần đầu gặp? 💭",["Người ấy nói chuyện hài hước","Có nhiều điểm chung với anh","Khiến anh cảm thấy thoải mái, dễ nói chuyện","Có gì đó đặc biệt khiến anh tò mò"]],
+["Anh có thấy phiền khi em hay nhắn tin cho anh không? 🫣",["Không, anh thấy bình thường mà","Không phiền, cứ nhắn khi em muốn","Thỉnh thoảng hơi phiền một chút, nhưng không sao","Rất phiền, làm ơn đừng nhắn nữa 🥰"]]
+];
+let i=0, selected=false;
+function start(){document.getElementById('intro').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');render();}
+function render(){
+ selected=false; document.getElementById('progress').textContent=`Câu ${i+1} / ${questions.length}`;
+ document.getElementById('question').textContent=questions[i][0];
+ const box=document.getElementById('options'); box.innerHTML='';
+ questions[i][1].forEach((x)=>{let b=document.createElement('button');b.className='option';b.textContent=x;b.onclick=()=>{document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));b.classList.add('selected');selected=true;document.getElementById('next').disabled=false};box.appendChild(b)});
+ document.getElementById('next').textContent=i===questions.length-1?'Hoàn thành':'Câu tiếp theo';
+ document.getElementById('next').disabled=true;
+}
+function nextQuestion(){if(!selected)return;if(i<questions.length-1){i++;render()}else{document.getElementById('quiz').classList.add('hidden');document.getElementById('end').classList.remove('hidden')}}
+</script>
+</body>
+</html>
