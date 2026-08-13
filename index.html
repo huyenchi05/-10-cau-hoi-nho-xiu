@@ -50,7 +50,7 @@
   </section>
 
   <section id="end" class="hidden end">
-    <div>cảm ơn vì đã dành thời gian để test</div>
+    <div>cảm ơn vì đã dành thời gian để test</div><div class="tiny">Câu trả lời đã được gửi rồi nha 💙</div>
   </section>
 </div>
 
@@ -77,7 +77,40 @@ function render(){
  document.getElementById('next').textContent=i===questions.length-1?'Hoàn thành':'Câu tiếp theo';
  document.getElementById('next').disabled=true;
 }
-function nextQuestion(){if(!selected)return;if(i<questions.length-1){i++;render()}else{document.getElementById('quiz').classList.add('hidden');document.getElementById('end').classList.remove('hidden')}}
+async function nextQuestion(){
+  if(!selected)return;
+  if(i<questions.length-1){i++;render();return;}
+  const nextBtn=document.getElementById('next');
+  nextBtn.disabled=true;
+  nextBtn.textContent='Đang gửi...';
+
+  const payload={
+    _subject:"💙 Có người vừa hoàn thành bài test crush",
+    _template:"table",
+    _captcha:"false"
+  };
+
+  answers.forEach((a,idx)=>{
+    payload["Câu "+(idx+1)] = a ? (a.letter + ". " + a.text) : "";
+  });
+
+  try{
+    const response = await fetch(SUBMIT_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if(!result.success) throw new Error("submit failed");
+
+    document.getElementById('quiz').classList.add('hidden');
+    document.getElementById('end').classList.remove('hidden');
+  }catch(e){
+    nextBtn.disabled=false;
+    nextBtn.textContent='Hoàn thành';
+    alert('Chưa gửi được câu trả lời. Cậu thử lại giúp tớ nhé 💙');
+  }
+}
 </script>
 </body>
 </html>
