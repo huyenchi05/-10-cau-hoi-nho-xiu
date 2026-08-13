@@ -68,12 +68,26 @@ const questions = [
 ["Anh có thấy phiền khi em hay nhắn tin cho anh không? 🫣",["Không, anh thấy bình thường mà","Không phiền, cứ nhắn khi em muốn","Thỉnh thoảng hơi phiền một chút, nhưng không sao","Rất phiền, làm ơn đừng nhắn nữa 🥰"]]
 ];
 let i=0, selected=false;
+const answers=[];
+const SUBMIT_URL="https://formsubmit.co/ajax/dthuyenchi05@gmail.com";
 function start(){document.getElementById('intro').classList.add('hidden');document.getElementById('quiz').classList.remove('hidden');render();}
 function render(){
  selected=false; document.getElementById('progress').textContent=`Câu ${i+1} / ${questions.length}`;
  document.getElementById('question').textContent=questions[i][0];
  const box=document.getElementById('options'); box.innerHTML='';
- questions[i][1].forEach((x)=>{let b=document.createElement('button');b.className='option';b.textContent=x;b.onclick=()=>{document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));b.classList.add('selected');selected=true;document.getElementById('next').disabled=false};box.appendChild(b)});
+ questions[i][1].forEach((x,idx)=>{
+  let b=document.createElement('button');
+  b.className='option';
+  b.textContent=String.fromCharCode(65+idx)+". "+x;
+  b.onclick=()=>{
+    document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));
+    b.classList.add('selected');
+    answers[i]={letter:String.fromCharCode(65+idx),text:x};
+    selected=true;
+    document.getElementById('next').disabled=false;
+  };
+  box.appendChild(b);
+});
  document.getElementById('next').textContent=i===questions.length-1?'Hoàn thành':'Câu tiếp theo';
  document.getElementById('next').disabled=true;
 }
@@ -84,17 +98,17 @@ async function nextQuestion(){
   nextBtn.disabled=true;
   nextBtn.textContent='Đang gửi...';
 
-  const payload={
-    _subject:"💙 Có người vừa hoàn thành bài test crush",
-    _template:"table",
-    _captcha:"false"
-  };
-
-  answers.forEach((a,idx)=>{
-    payload["Câu "+(idx+1)] = a ? (a.letter + ". " + a.text) : "";
-  });
-
   try{
+    const payload={
+      _subject:"💙 Có người vừa hoàn thành bài test crush",
+      _template:"table",
+      _captcha:"false",
+      _url:"https://huyenchi05.github.io/-10-cau-hoi-nho-xiu/"
+    };
+
+    answers.forEach((a,idx)=>{
+      payload["Câu "+(idx+1)] = a ? (a.letter + ". " + a.text) : "";
+    });
     const response = await fetch(SUBMIT_URL,{
       method:"POST",
       headers:{"Content-Type":"application/json","Accept":"application/json"},
